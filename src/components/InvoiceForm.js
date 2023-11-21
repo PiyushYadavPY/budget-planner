@@ -40,15 +40,31 @@ const InvoiceForm = () => {
     dispatch({ type: 'REMOVE_ITEM', payload: index });
   };
 
-  const generatePDF = () => {
-   const doc = new jsPDF();
-    doc.text(`Invoice Number: ${state.invoiceNumber}`, 10, 10);
-    state.items.forEach((item, index) => {
-      doc.text(`${index + 1}. ${item.description} - ${item.quantity} x ${item.price}`, 10, 20 + index * 10);
+  const calculateTotalAmount = () => {
+    let total = 0;
+    state.items.forEach((item) => {
+      total += item.quantity * item.price;
     });
-    doc.save('invoice.pdf');
-  }; 
+    return total;
+  };
 
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    doc.text(`Invoice Number: ${state.invoiceNumber}`, 10, 10);
+    doc.text(`Date: ${state.date}`, 10, 20);
+    doc.text(`Billing Address: ${state.billingAddress}`, 10, 30);
+
+    let verticalOffset = 40;
+    state.items.forEach((item, index) => {
+      doc.text(`${index + 1}. ${item.description} - ${item.quantity} x ${item.price} = ${item.quantity * item.price}`, 10, verticalOffset);
+      verticalOffset += 10;
+    });
+
+    const totalAmount = calculateTotalAmount();
+    doc.text(`Total Amount: $${totalAmount}`, 10, verticalOffset + 10);
+
+    doc.save('invoice.pdf');
+  };
   return (
     <div className="invoice-form mx-auto w-3/4 bg-gray-100 p-6 rounded-lg">
       <input

@@ -16,21 +16,23 @@ const InvoiceItems = ({ items, onAddItem, onRemoveItem }) => {
     onAddItem(newItem);
     setNewItem({ description: '', quantity: '', price: '' });
   };
+  const calculateTotal = (item) => {
+    return item.quantity * item.price;
+  };
 
   return (
     <div className="my-4">
       <h3 className="text-lg font-semibold mb-2">Items</h3>
       {items.map((item, index) => (
         <div key={index} className="flex justify-between items-center mb-2">
-          {/* Display items */}
           <span>{item.description}</span>
-          {/* Other item details */}
+          <span className="text-gray-500"> ({item.quantity} x ${item.price})</span>
+          <span>Total: ${calculateTotal(item)}</span>
           <button onClick={() => onRemoveItem(index)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
             Remove
           </button>
         </div>
       ))}
-      {/* Form to add new items */}
       <input
         type="text"
         name="description"
